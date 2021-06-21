@@ -1,0 +1,4 @@
+m=video 40018 RTP/AVP 96
+a=rtpmap:96 H264
+a=framerate:30
+c=IN IP4 192.168.31.1

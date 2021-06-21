@@ -1,0 +1,7 @@
+m=video 40018 RTP/AVP 96
+a=rtpmap:96 H264
+a=framerate:30
+
+m=audio 40020  RTP/AVP 97
+a=rtpmap:97 mpeg4-generic/44100/1
+a=fmtp: 97 streamtype=5;config=1208;sizeLength=13; indexLength=3

@@ -1,0 +1,5 @@
+m=audio 40020  RTP/AVP 97
+c=IN IP4 0.0.0.0
+a=rtpmap:97 mpeg4-generic/44100/1
+a=control:track1
+a=fmtp: 97 streamtype=5; mode=AAC_hbr;config=0a10;Profile=1;sizeLength=13; indexLength=3
