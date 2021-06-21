@@ -1,18 +1,12 @@
 package com.dragon.videorecorder
 
-import android.Manifest
 import android.content.Context
-import android.content.pm.PackageManager
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.text.Editable
-import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import android.util.Log
 import android.view.Surface
 import android.view.SurfaceHolder
-import android.widget.Toast
-import androidx.core.app.ActivityCompat
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.edit
 import com.dragon.renderlib.background.RenderScope
 import com.dragon.renderlib.camera.CameraHolder
