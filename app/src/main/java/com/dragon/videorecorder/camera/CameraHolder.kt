@@ -255,14 +255,16 @@ class CameraHolder(private val context: Context) {
 
     fun onRequestPermissionsResult(
         requestCode: Int,
-        permissions: Array<out String>,
+        permissions: Array<out String?>,
         grantResults: IntArray
-    ) {
+    ): Boolean {
         if (requestCode == CAMERA_REQUEST_CODE) {
             cameraPermissionInProcess = false
             if (permissions.firstOrNull() == Manifest.permission.CAMERA && grantResults.firstOrNull() == PackageManager.PERMISSION_GRANTED) {
                 invalidate()
             }
+            return true
         }
+        return false
     }
 }

@@ -39,6 +39,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // 保持屏幕常亮，防止录制过程中息屏导致中断
+        window.addFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+
         getSharedPreferences("ip", Context.MODE_PRIVATE).getString("ip",null)?.let {
             ipEditText.text = SpannableStringBuilder(it)
         }
@@ -117,5 +120,15 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
         cameraHolder.release().invalidate()
         recorder.stopVideoEncoder()
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String?>,
+        grantResults: IntArray
+    ) {
+        if(!cameraHolder.onRequestPermissionsResult(requestCode, permissions, grantResults)) {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        }
     }
 }
