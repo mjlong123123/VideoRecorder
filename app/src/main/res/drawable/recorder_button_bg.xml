@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 系统相机风格的录制按钮背景 -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 外圆环（白色边框） -->
+    <item>
+        <shape android:shape="oval">
+            <stroke
+                android:width="4dp"
+                android:color="@color/white" />
+            <solid android:color="@android:color/transparent" />
+            <size android:width="72dp" android:height="72dp" />
+        </shape>
+    </item>
+    
+    <!-- 内圆点（红色录制指示） -->
+    <item
+        android:left="10dp"
+        android:top="10dp"
+        android:right="10dp"
+        android:bottom="10dp">
+        <shape android:shape="oval">
+            <solid android:color="#FFCCCCCC" />
+        </shape>
+    </item>
+</layer-list>

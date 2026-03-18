@@ -20,8 +20,13 @@ class VideoRecorder(
     val destroySurface: (Surface) -> Unit = {}
 ) {
     private val videoPayloadType = 96;
-    private val videoRtpPort = 40018;
-    private val videoBitRate = 2432 * 1024;//720p 960*720
+    private var videoRtpPort = 40018; // 默认值，可通过参数覆盖
+    // 根据分辨率动态调整码率：720p=3M, 1080p=5M, 更高分辨率=8M
+    private val videoBitRate = when {
+        width * height >= 1920 * 1080 -> 8 * 1024 * 1024  // 1080p 及以上
+        width * height >= 1280 * 720 -> 5 * 1024 * 1024   // 720p 到 1080p
+        else -> 3 * 1024 * 1024                           // 低于 720p
+    }
     private val videoFrameRate = 30;
     private val videoSampleRate = 90000
     private val videoTimeIncrease = videoSampleRate / videoFrameRate
@@ -40,11 +45,14 @@ class VideoRecorder(
     private val naluData = NaluData();
 
 
-    fun startVideoEncoder(ip: String) {
+    fun startVideoEncoder(ips: List<String>, port: Int = 40018) {
         if(isStarted){
             return
         }
         isStarted = true
+        
+        // 使用传入的端口或默认值
+        videoRtpPort = if (port > 0) port else 40018
         val mediaFormat = MediaFormat.createVideoFormat(MediaFormat.MIMETYPE_VIDEO_AVC, width, height)
         mediaFormat.setInteger(MediaFormat.KEY_BIT_RATE, videoBitRate)
         mediaFormat.setInteger(MediaFormat.KEY_FRAME_RATE, videoFrameRate)
@@ -105,7 +113,12 @@ class VideoRecorder(
                 }
                 videoRtpWrapper = RtpWrapper()
                 videoRtpWrapper?.open(videoRtpPort, videoPayloadType, videoSampleRate)
-                videoRtpWrapper?.addDestinationIp(ip)
+                
+                // 添加所有目的地址 IP
+                ips.forEach { ip ->
+                    videoRtpWrapper?.addDestinationIp(ip)
+                    log { "Added destination IP: $ip" }
+                }
 
                 videoRtpWrapper?.sendData(ppsByteArray, ppsByteArraySize, videoPayloadType, true, 0)
                 videoRtpWrapper?.sendData(spsByteArray, spsByteArraySize, videoPayloadType, true, 0)

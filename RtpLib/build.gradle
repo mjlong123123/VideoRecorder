@@ -1,16 +1,11 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 
 android {
-    compileSdkVersion 29
-    buildToolsVersion "29.0.3"
+    compileSdkVersion 30
 
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 29
-        versionCode 1
-        versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -41,6 +36,12 @@ android {
     }
     ndkVersion '22.0.7026061'
     namespace 'com.dragon.videorecorder.rtp'
+    lint {
+        targetSdk 29
+    }
+    testOptions {
+        targetSdk 29
+    }
 }
 
 dependencies {

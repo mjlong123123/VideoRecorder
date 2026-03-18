@@ -5,35 +5,60 @@
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	tools:context=".MainActivity"
-	android:background="@color/white">
-
+	android:background="@color/black">
 
 	<SurfaceView
 		android:id="@+id/surfaceView"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:layout_marginTop="200dp"/>
+		android:layout_width="0dp"
+		android:layout_height="0dp"
+		app:layout_constraintDimensionRatio="9:16"
+		app:layout_constraintTop_toTopOf="parent"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintEnd_toEndOf="parent"/>
 
 	<EditText
 		android:id="@+id/ipEditText"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_marginTop="24dp"
+		android:text="        "
 		android:ems="10"
 		android:inputType="text"
 		android:hint="192.168.1.1"
+		android:backgroundTint="@color/white"
+		android:textColor="@color/white"
+		android:textColorHint="@color/white"
 		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintStart_toStartOf="parent"
 		app:layout_constraintTop_toTopOf="parent" />
 
-	<Button
-		android:id="@+id/startButton"
+	<LinearLayout
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:layout_marginTop="24dp"
-		android:text="@string/start_record"
+		android:orientation="horizontal"
+		android:layout_marginBottom="64dp"
 		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toBottomOf="@+id/ipEditText" />
+		app:layout_constraintBottom_toBottomOf="parent">
+
+		<ImageButton
+			android:id="@+id/settingsButton"
+			android:layout_width="72dp"
+			android:layout_height="72dp"
+			android:layout_marginEnd="16dp"
+			android:background="@drawable/button_circle_bg"
+			android:src="@drawable/ic_settings"
+			android:contentDescription="设置"
+			app:tint="@color/white" />
+
+		<androidx.appcompat.widget.AppCompatButton
+			android:id="@+id/startButton"
+			android:layout_width="72dp"
+			android:layout_height="72dp"
+			android:text=""
+			android:background="@drawable/recorder_button_bg"
+			android:backgroundTint="@null" />
+	</LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
