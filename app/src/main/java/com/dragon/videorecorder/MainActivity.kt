@@ -167,6 +167,7 @@ a=framerate:30"""
                     },
                     isRecording = isRecording,
                     currentIp = ipAddress,
+                    deviceIps = deviceIps,
                     surfaceHolderCallback = surfaceCallback
                 )
                 

@@ -1,11 +1,13 @@
 package com.dragon.videorecorder.ui.main
 
 import android.view.SurfaceHolder
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
@@ -38,9 +40,22 @@ fun MainScreen(
     onIpChanged: (String) -> Unit,
     isRecording: Boolean = false,
     currentIp: String = "",
+    deviceIps: List<String> = emptyList(),
     surfaceHolderCallback: SurfaceHolder.Callback? = null
 ) {
     val context = LocalContext.current
+
+    // 录制按钮的脉冲动画
+    val infiniteTransition = rememberInfiniteTransition(label = "recording pulse")
+    val pulseAlpha by infiniteTransition.animateFloat(
+        initialValue = 0.3f,
+        targetValue = 0.6f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1000),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "pulse alpha"
+    )
 
     Box(
         modifier = Modifier
@@ -51,7 +66,7 @@ fun MainScreen(
             modifier = Modifier.fillMaxSize()
         ) {
             // SurfaceView 引用
-            val (surfaceView, settingsButton, recordButton) = createRefs()
+            val (surfaceView, settingsButton, recordButton, statusIndicator) = createRefs()
 
             // SurfaceView - 使用 AndroidView 包装
             AndroidView(
@@ -90,7 +105,7 @@ fun MainScreen(
             )
 
 
-            // 设置按钮 - 右上角
+            // 设置按钮 - 右上角，优化视觉效果
             IconButton(
                 onClick = onSettingsClick,
                 modifier = Modifier
@@ -99,22 +114,35 @@ fun MainScreen(
                         end.linkTo(surfaceView.end, margin = 32.dp)
                     }
                     .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.2f))
-                    .size(30.dp)
+                    .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.3f))
+                    .size(44.dp) // 增大到 44dp，更符合触摸友好原则
             ) {
                 Icon(
                     imageVector = Icons.Default.Settings,
                     contentDescription = "设置",
-                    tint = Color.White,
+                    tint = Color.White.copy(alpha = 0.9f),
                     modifier = Modifier.size(24.dp)
                 )
             }
 
-            // 录制按钮 - 水平居中
+            // 状态指示器 - 显示已连接的设备 IP
+            if (deviceIps.isNotEmpty()) {
+                StatusIndicator(
+                    deviceIps = deviceIps,
+                    isRecording = isRecording,
+                    modifier = Modifier.constrainAs(statusIndicator) {
+                        bottom.linkTo(recordButton.top, margin = 24.dp)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    }
+                )
+            }
+
+            // 录制按钮 - 水平居中，优化样式
             Box(
                 modifier = Modifier
                     .constrainAs(recordButton) {
-                        bottom.linkTo(surfaceView.bottom, margin = 32.dp)
+                        bottom.linkTo(surfaceView.bottom, margin = 48.dp) // 增加底部间距
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
                     }
@@ -126,16 +154,92 @@ fun MainScreen(
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null,
-                        onClick = onRecordClick
+                        onClick = onRecordClick,
+                        role = Role.Button
                     ),
                 contentAlignment = Alignment.Center
             ) {
-                // 录制状态指示器（内部小圆圈）
+                // 录制状态指示器（内部圆形或方形）
                 Box(
                     modifier = Modifier
                         .size(if (isRecording) 44.dp else 52.dp)
+                        .clip(
+                            if (isRecording) {
+                                RoundedCornerShape(8.dp) // 录制中显示圆角方形
+                            } else {
+                                CircleShape // 待机时显示圆形
+                            }
+                        )
+                        .background(
+                            Color.White.copy(
+                                alpha = if (isRecording) pulseAlpha else 0.3f // 录制中脉冲效果
+                            )
+                        )
+                )
+            }
+        }
+    }
+}
+
+/**
+ * 录制状态指示器 - 显示已连接的设备 IP
+ */
+@Composable
+private fun StatusIndicator(
+    deviceIps: List<String>,
+    isRecording: Boolean,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .background(
+                color = Color.Black.copy(alpha = 0.5f),
+                shape = RoundedCornerShape(16.dp)
+            )
+            .padding(horizontal = 16.dp, vertical = 12.dp)
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            // 录制状态图标和文字
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                // 信号图标（使用圆点代替）
+                Box(
+                    modifier = Modifier
+                        .size(8.dp)
                         .clip(CircleShape)
-                        .background(Color.White.copy(alpha = 0.3f))
+                        .background(
+                            if (isRecording) Color(0xFF34C759) else Color(0xFF0A84FF)
+                        )
+                )
+                
+                Text(
+                    text = if (isRecording) "录制中" else "已连接",
+                    color = Color.White.copy(alpha = 0.9f),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+            
+            // 显示 IP 列表（最多显示 3 个）
+            Spacer(modifier = Modifier.height(8.dp))
+            deviceIps.take(3).forEachIndexed { index, ip ->
+                Text(
+                    text = "• $ip",
+                    color = Color.White.copy(alpha = 0.7f),
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(vertical = 2.dp)
+                )
+            }
+            
+            // 如果超过 3 个，显示省略号
+            if (deviceIps.size > 3) {
+                Text(
+                    text = "+ ${deviceIps.size - 3} 更多",
+                    color = Color.White.copy(alpha = 0.5f),
+                    style = MaterialTheme.typography.bodySmall
                 )
             }
         }
