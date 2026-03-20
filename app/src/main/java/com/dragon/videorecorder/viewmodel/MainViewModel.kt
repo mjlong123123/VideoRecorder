@@ -3,7 +3,9 @@ package com.dragon.videorecorder.viewmodel
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.core.content.edit
+import com.dragon.renderlib.background.RenderScope
 import com.dragon.videorecorder.config.PortConfig
+import com.dragon.videorecorder.utils.IpPortValidator
 import com.dragon.videorecorder.utils.ToastUtils
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -100,16 +102,66 @@ class MainViewModel : ViewModel() {
         return _deviceIps.value
     }
     
-    fun addDevice(ip: String, context: Context) {
+    /**
+     * 验证并添加设备
+     * 支持两种格式：
+     * 1. 纯 IP：192.168.0.1
+     * 2. IP:Port：192.168.0.1:3000
+     *
+     * @param input 输入字符串（可以是 IP 或 IP:Port）
+     * @param context 上下文
+     */
+    fun addDevice(input: String, context: Context) {
+        val validation = IpPortValidator.validateAndParse(input)
+
+        if (!validation.isValid) {
+            ToastUtils.showError(context, validation.errorMessage ?: "格式错误")
+            return
+        }
+
+        val ip = validation.ip!!
+        val port = validation.port
+
+        // 如果提供了端口，更新 RTP 端口
+        if (port != null) {
+            if (PortConfig.isValidPort(port)) {
+                _rtpPort.value = port
+                saveRtpPort(context)
+                val warnings = PortConfig.getPortValidationErrors(port)
+                if (warnings.isNotEmpty()) {
+                    ToastUtils.showInfo(context, warnings.joinToString("\n"))
+                }
+            } else {
+                ToastUtils.showError(context, "端口必须在 ${PortConfig.MIN_PORT} 到 ${PortConfig.MAX_PORT} 之间")
+                return
+            }
+        }
+
+        // 添加设备（使用纯 IP 格式，port 信息通过 _rtpPort 共享）
         val currentList = _deviceIps.value.toMutableList()
         if (!currentList.contains(ip)) {
             currentList.add(ip)
             _deviceIps.value = currentList
             saveDevices(context)
-            ToastUtils.showSuccess(context, "已添加设备：$ip")
+
+            val message = if (port != null) {
+                "已添加设备：$ip:$port"
+            } else {
+                "已添加设备：$ip:${_rtpPort.value}"
+            }
+            ToastUtils.showSuccess(context, message)
         } else {
             ToastUtils.showWarning(context, "该设备已存在")
         }
+    }
+
+    /**
+     * 获取设备的显示文本，格式为 IP:Port
+     * @param ip IP 地址
+     * @return 格式化后的字符串
+     */
+    fun getDeviceDisplayText(ip: String): String {
+        return "$ip:${_rtpPort.value}"
     }
     
     fun removeDevice(ip: String, context: Context) {

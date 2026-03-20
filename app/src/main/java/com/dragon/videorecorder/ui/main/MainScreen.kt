@@ -41,7 +41,8 @@ fun MainScreen(
     isRecording: Boolean = false,
     currentIp: String = "",
     deviceIps: List<String> = emptyList(),
-    surfaceHolderCallback: SurfaceHolder.Callback? = null
+    surfaceHolderCallback: SurfaceHolder.Callback? = null,
+    currentPort: Int = 40018
 ) {
     val context = LocalContext.current
 
@@ -130,6 +131,7 @@ fun MainScreen(
                 StatusIndicator(
                     deviceIps = deviceIps,
                     isRecording = isRecording,
+                    currentPort = currentPort,
                     modifier = Modifier.constrainAs(statusIndicator) {
                         bottom.linkTo(recordButton.top, margin = 24.dp)
                         start.linkTo(parent.start)
@@ -188,7 +190,8 @@ fun MainScreen(
 private fun StatusIndicator(
     deviceIps: List<String>,
     isRecording: Boolean,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    currentPort: Int = 40018
 ) {
     Box(
         modifier = modifier
@@ -215,25 +218,25 @@ private fun StatusIndicator(
                             if (isRecording) Color(0xFF34C759) else Color(0xFF0A84FF)
                         )
                 )
-                
+
                 Text(
                     text = if (isRecording) "录制中" else "已连接",
                     color = Color.White.copy(alpha = 0.9f),
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
-            
-            // 显示 IP 列表（最多显示 3 个）
+
+            // 显示 IP:Port 列表（最多显示 3 个）
             Spacer(modifier = Modifier.height(8.dp))
             deviceIps.take(3).forEachIndexed { index, ip ->
                 Text(
-                    text = "• $ip",
+                    text = "• $ip:$currentPort",
                     color = Color.White.copy(alpha = 0.7f),
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.padding(vertical = 2.dp)
                 )
             }
-            
+
             // 如果超过 3 个，显示省略号
             if (deviceIps.size > 3) {
                 Text(

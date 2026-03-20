@@ -34,6 +34,12 @@ fun DeviceMenu(
     onDismiss: () -> Unit={},
     enabled: Boolean = true
 ) {
+    /**
+     * 获取设备的显示文本，格式为 IP:Port
+     */
+    fun getDeviceDisplayText(ip: String): String {
+        return "$ip:$currentPort"
+    }
     if (!enabled) {
         return
     }
@@ -104,7 +110,7 @@ fun DeviceMenu(
                     // 已添加的设备列表
                     deviceIps.forEach { ip ->
                         DeviceItem(
-                            ip = ip,
+                            ip = getDeviceDisplayText(ip),
                             onClick = {
                                 onDismiss()
                                 onDeviceClick(ip)

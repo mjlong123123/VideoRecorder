@@ -168,7 +168,8 @@ a=framerate:30"""
                     isRecording = isRecording,
                     currentIp = ipAddress,
                     deviceIps = deviceIps,
-                    surfaceHolderCallback = surfaceCallback
+                    surfaceHolderCallback = surfaceCallback,
+                    currentPort = rtpPort
                 )
                 
                 // 显示设备菜单
@@ -205,13 +206,15 @@ a=framerate:30"""
                 
                 // 显示端口设置对话框
                 if (showPortDialog) {
+                    val port by viewModel.rtpPort.collectAsState()
                     PortSettingDialog(
                         onDismiss = { viewModel.showPortDialog(false) },
                         onConfirm = { port ->
                             if (viewModel.updateRtpPort(port, this)) {
                                 viewModel.showPortDialog(false)
                             }
-                        }
+                        },
+                        port
                     )
                 }
                 
