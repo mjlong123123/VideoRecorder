@@ -255,7 +255,7 @@ class CameraHolder(private val context: Context) {
 
     fun onRequestPermissionsResult(
         requestCode: Int,
-        permissions: Array<out String?>,
+        permissions: Array<String>,
         grantResults: IntArray
     ): Boolean {
         if (requestCode == CAMERA_REQUEST_CODE) {

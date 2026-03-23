@@ -357,4 +357,18 @@ a=framerate:30"""
             }
         }
     }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        // 将权限请求结果传递给CameraHolder处理
+        if (cameraHolder.onRequestPermissionsResult(requestCode, permissions, grantResults)) {
+            // CameraHolder已经处理了这个权限请求
+            return
+        }
+        // 可以在这里处理其他权限请求
+    }
 }
