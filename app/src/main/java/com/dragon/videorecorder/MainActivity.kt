@@ -24,6 +24,7 @@ import com.dragon.renderlib.extension.MirrorType
 import com.dragon.renderlib.node.NodesRender
 import com.dragon.renderlib.node.OesTextureNode
 import com.dragon.renderlib.texture.CombineSurfaceTexture
+import com.dragon.videorecorder.ui.main.AboutDialog
 import com.dragon.videorecorder.ui.main.DeviceMenu
 import com.dragon.videorecorder.ui.main.IpAddressDialog
 import com.dragon.videorecorder.ui.main.MainScreen
@@ -147,6 +148,7 @@ a=framerate:30"""
                 val showIpDialog by viewModel.showIpDialog.collectAsState()
                 val showPortDialog by viewModel.showPortDialog.collectAsState()
                 val showSdpDialog by viewModel.showSdpDialog.collectAsState()
+                val showAboutDialog by viewModel.showAboutDialog.collectAsState()
                 val rtpPort by viewModel.rtpPort.collectAsState()
                 
                 // 创建 SurfaceHolder 回调
@@ -188,6 +190,10 @@ a=framerate:30"""
                         onDeleteDevice = { ip ->
                             viewModel.removeDevice(ip, this@MainActivity)
                         },
+                        onAboutClick = {
+                            viewModel.toggleDeviceMenu(false)
+                            viewModel.showAboutDialog(true)
+                        },
                         onDismiss = { viewModel.toggleDeviceMenu(false) },
                         enabled = !isRecording // 录制时禁用菜单
                     )
@@ -228,6 +234,13 @@ a=framerate:30"""
                             // 触发系统文件选择器，文件名：mobile_端口号.sdp
                             saveSdpLauncher.launch("mobile_${rtpPort}.sdp")
                         }
+                    )
+                }
+                
+                // 显示关于对话框
+                if (showAboutDialog) {
+                    AboutDialog(
+                        onDismiss = { viewModel.showAboutDialog(false) }
                     )
                 }
             }

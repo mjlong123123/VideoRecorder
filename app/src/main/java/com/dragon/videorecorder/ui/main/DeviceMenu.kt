@@ -31,6 +31,7 @@ fun DeviceMenu(
     onGenerateSdp: () -> Unit = {},
     onDeviceClick: (String) -> Unit={},
     onDeleteDevice: (String) -> Unit={},
+    onAboutClick: () -> Unit = {},
     onDismiss: () -> Unit={},
     enabled: Boolean = true
 ) {
@@ -64,6 +65,20 @@ fun DeviceMenu(
             Column(
                 modifier = Modifier.padding(vertical = 12.dp)
             ) {
+                // 关于（放在第一项）
+                MenuItem(
+                    text = "关于",
+                    onClick = {
+                        onDismiss()
+                        onAboutClick()
+                    }
+                )
+                
+                HorizontalDivider(
+                    modifier = Modifier.padding(vertical = 8.dp),
+                    color = Color.White.copy(alpha = 0.2f)
+                )
+                
                 // 扫码添加设备
                 MenuItem(
                     text = "扫码添加设备",

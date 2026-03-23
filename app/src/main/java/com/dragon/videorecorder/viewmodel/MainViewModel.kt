@@ -46,6 +46,10 @@ class MainViewModel : ViewModel() {
     private val _showSdpDialog = MutableStateFlow(false)
     val showSdpDialog: StateFlow<Boolean> = _showSdpDialog.asStateFlow()
     
+    // 关于对话框状态
+    private val _showAboutDialog = MutableStateFlow(false)
+    val showAboutDialog: StateFlow<Boolean> = _showAboutDialog.asStateFlow()
+    
     // SharedPreferences 名称
     companion object {
         private const val PREFS_IP = "ip"
@@ -93,6 +97,10 @@ class MainViewModel : ViewModel() {
     
     fun showSdpDialog(show: Boolean) {
         _showSdpDialog.value = show
+    }
+    
+    fun showAboutDialog(show: Boolean) {
+        _showAboutDialog.value = show
     }
     
     /**
